@@ -1,13 +1,8 @@
-from typing import Dict, TextIO, Optional
+from typing import Dict, TextIO
 from lxml import etree
 from page.elements import Region
 from page.elements.metadata import Metadata
-
-NsMap = Dict[Optional[str], str]
-DEFAULT_XML_NAMESPACE = (
-    "http://schema.primaresearch.org/PAGE/gts/pagecontent/2019-07-15"
-)
-DEFAULT_NAMESPACE_MAP: NsMap = {None: DEFAULT_XML_NAMESPACE}
+from page.constants import DEFAULT_NAMESPACE_MAP, NsMap
 
 
 class Page:
@@ -15,6 +10,7 @@ class Page:
         self, metadata: Metadata, regions: Dict[str, Region],
         nsmap: NsMap = DEFAULT_NAMESPACE_MAP
     ):
+        self.metadata = metadata
         self.regions = regions
         self.nsmap = nsmap
 
@@ -23,7 +19,7 @@ class Page:
         root: etree.ElementBase, nsmap: NsMap
     ) -> "Page":
         metadata_xml = root.find("./Metadata", namespaces=nsmap)
-        metadata = Metadata.from_element(metadata_xml)
+        metadata = Metadata.from_element(metadata_xml, nsmap)
         regions = {}  # TODO: Parse regions.
 
         return Page(metadata, regions, nsmap)
@@ -32,4 +28,4 @@ class Page:
     def from_file(file: TextIO) -> "Page":
         tree = etree.parse(file)
         root = tree.getroot()
-        return Page.from_root_element(root, root.nsmap)
+        return Page.from_element(root, root.nsmap)

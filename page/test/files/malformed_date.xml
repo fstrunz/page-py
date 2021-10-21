@@ -1,0 +1,9 @@
+<PcGts xmlns="http://schema.primaresearch.org/PAGE/gts/pagecontent/2019-07-15" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://schema.primaresearch.org/PAGE/gts/pagecontent/2019-07-15 http://schema.primaresearch.org/PAGE/gts/pagecontent/2019-07-15/pagecontent.xsd">
+    <Metadata>
+      <Creator>Test Creator</Creator>
+      <Created>invalid date</Created>
+      <LastChange>invalid date</LastChange>
+      <Comments>Test Comment</Comments>
+    </Metadata>
+    <Page imageFilename="test.png" imageWidth="800" imageHeight="600"></Page>
+</PcGts>

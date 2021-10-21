@@ -2,7 +2,8 @@ from typing import Optional
 from datetime import datetime
 from dateutil import parser as dateparser
 from lxml import etree
-from page import PageXMLError, NsMap
+from page.exceptions import PageXMLError
+from page.constants import NsMap
 
 
 class Metadata:
