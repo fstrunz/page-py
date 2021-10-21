@@ -1,10 +1,12 @@
 import unittest
 from page import Page
+from page.exceptions import PageXMLError
 
 EXAMPLE_SIMPLE = "page/test/files/simple.xml"
 EXAMPLE_NO_COMMENT = "page/test/files/no_comment.xml"
 EXAMPLE_MALFORMED_DATE = "page/test/files/malformed_date.xml"
 EXAMPLE_EMPTY_CREATOR = "page/test/files/empty_creator.xml"
+EXAMPLE_EMPTY_COMMENT = "page/test/files/empty_comment.xml"
 
 
 class TestParseMetadata(unittest.TestCase):
@@ -29,6 +31,28 @@ class TestParseMetadata(unittest.TestCase):
                 meta.last_change.day
             )
             self.assertEqual(last_change, (1970, 1, 1))
+
+    def test_empty_creator(self):
+        with open(EXAMPLE_EMPTY_CREATOR, "r") as file:
+            page = Page.from_file(file)
+            meta = page.metadata
+            self.assertEqual(meta.creator, "")
+
+    def test_no_comment(self):
+        with open(EXAMPLE_NO_COMMENT, "r") as file:
+            page = Page.from_file(file)
+            meta = page.metadata
+            self.assertEqual(meta.comments, None)
+
+    def test_empty_comment(self):
+        with open(EXAMPLE_EMPTY_COMMENT, "r") as file:
+            page = Page.from_file(file)
+            meta = page.metadata
+            self.assertEqual(meta.comments, "")
+
+    def test_malformed_date(self):
+        with open(EXAMPLE_MALFORMED_DATE, "r") as file:
+            self.assertRaises(PageXMLError, lambda: Page.from_file(file))
 
 
 if __name__ == "__main__":

@@ -38,6 +38,6 @@ class Metadata:
         if comments_xml is None:
             comments = None
         else:
-            comments = comments_xml.text
+            comments = comments_xml.text or ""
 
         return Metadata(creator, created, last_change, comments)
