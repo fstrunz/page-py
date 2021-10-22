@@ -3,6 +3,7 @@ import rstr
 import re
 import random
 from page.elements.point import Point, parse_points, points_to_string
+from page.exceptions import PageXMLError
 
 
 class TestParsePoints(unittest.TestCase):
@@ -31,3 +32,26 @@ class TestParsePoints(unittest.TestCase):
                 points_to_string(parse_points(random_str)),
                 random_str
             )
+
+    def test_parse_too_short(self):
+        for i in range(100):
+            x = random.randrange(-1000, 1000)
+            y = random.randrange(-1000, 1000)
+            points_str = f"{int(x)},{int(y)}"
+            self.assertRaises(PageXMLError, lambda: parse_points(points_str))
+
+    def test_parse_coord_too_long(self):
+        for i in range(100):
+            x1 = random.randrange(-1000, 1000)
+            y1 = random.randrange(-1000, 1000)
+            z1 = random.randrange(-1000, 1000)
+
+            x2 = random.randrange(-1000, 1000)
+            y2 = random.randrange(-1000, 1000)
+            z2 = random.randrange(-1000, 1000)
+
+            points_str = (
+                f"{int(x1)},{int(y1)},{int(z1)} {int(x2)},{int(y2)},{int(z2)}"
+            )
+
+            self.assertRaises(PageXMLError, lambda: parse_points(points_str))
