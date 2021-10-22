@@ -1,5 +1,5 @@
 from typing import List, Dict
-from page.elements import Point
+from page.elements.point import Point
 
 
 class Line:

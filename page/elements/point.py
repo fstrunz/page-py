@@ -1,16 +1,27 @@
 from typing import List
+from dataclasses import dataclass
 from page.exceptions import PageXMLError
 
 
+@dataclass
 class Point:
     def __init__(self, x: int, y: int):
         self.x = x
         self.y = y
 
+    def __hash__(self):
+        return hash((self.x, self.y))
+
+    def __str__(self):
+        return f"({self.x}, {self.y})"
+
+    def __repr__(self):
+        return self.__str__()
+
 
 def parse_points(points_str: str) -> List[Point]:
     # PAGE XML spec defines the point string using the regular expression
-    # ([0-9]+,[0.9]+ )+([0-9]+,[0-9]+)
+    # ([0-9]+,[0-9]+ )+([0-9]+,[0-9]+)
 
     points: List[Point] = []
 
@@ -35,3 +46,7 @@ def parse_points(points_str: str) -> List[Point]:
         )
 
     return points
+
+
+def points_to_string(points: List[Point]) -> str:
+    return ' '.join([f'{p.x},{p.y}' for p in points])

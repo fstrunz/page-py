@@ -1,11 +1,10 @@
 from abc import ABC
 from typing import List, Tuple
 from enum import Enum
-from page.elements import Point
 from page.elements.line import Line
+from page.elements.point import Point, parse_points
 from page.constants import NsMap
 from page.exceptions import PageXMLError
-from page.elements.point import parse_points
 from lxml import etree
 
 
