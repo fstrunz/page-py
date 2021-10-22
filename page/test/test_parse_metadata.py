@@ -2,11 +2,11 @@ import unittest
 from page import Page
 from page.exceptions import PageXMLError
 
-EXAMPLE_SIMPLE = "page/test/files/simple.xml"
-EXAMPLE_NO_COMMENT = "page/test/files/no_comment.xml"
-EXAMPLE_MALFORMED_DATE = "page/test/files/malformed_date.xml"
-EXAMPLE_EMPTY_CREATOR = "page/test/files/empty_creator.xml"
-EXAMPLE_EMPTY_COMMENT = "page/test/files/empty_comment.xml"
+EXAMPLE_SIMPLE = "page/test/files/metadata/simple.xml"
+EXAMPLE_NO_COMMENT = "page/test/files/metadata/no_comment.xml"
+EXAMPLE_MALFORMED_DATE = "page/test/files/metadata/malformed_date.xml"
+EXAMPLE_EMPTY_CREATOR = "page/test/files/metadata/empty_creator.xml"
+EXAMPLE_EMPTY_COMMENT = "page/test/files/metadata/empty_comment.xml"
 
 
 class TestParseMetadata(unittest.TestCase):
