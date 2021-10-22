@@ -3,11 +3,10 @@ from dataclasses import dataclass
 from page.exceptions import PageXMLError
 
 
-@dataclass
+@dataclass(repr=False, order=True)
 class Point:
-    def __init__(self, x: int, y: int):
-        self.x = x
-        self.y = y
+    x: int
+    y: int
 
     def __hash__(self):
         return hash((self.x, self.y))
