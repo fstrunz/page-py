@@ -55,3 +55,23 @@ class TestParsePoints(unittest.TestCase):
             )
 
             self.assertRaises(PageXMLError, lambda: parse_points(points_str))
+
+    def test_parse_coord_too_short(self):
+        for i in range(100):
+            n = random.randrange(2, 100)
+            points_str = ' '.join(
+                str(random.randrange(-1000, 1000)) for _ in range(n)
+            )
+            self.assertRaises(PageXMLError, lambda: parse_points(points_str))
+
+    def test_point_order_refl_antisymm(self):
+        for i in range(100):
+            x = random.randrange(-1000, 1000)
+            y = random.randrange(-1000, 1000)
+
+            p = Point(x, y)
+
+            # Reflexivity (a <= a for all a)
+            self.assertLessEqual(p, p)
+            # Antisymmetry (a <= b and a >= b -> a = b for all a, b)
+            self.assertEqual(p, p)
