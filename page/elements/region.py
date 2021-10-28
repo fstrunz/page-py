@@ -32,8 +32,19 @@ class Region(ABC):
 
         coords = parse_points(points_str)
 
-        # TODO: Parse child regions.
-        return region_id, coords, []
+        child_regions = []
+
+        for child_xml in region_xml.iterchildren():
+            if child_xml.tag.endswith("Region"):
+                # try to parse this region
+                region: Optional[Region] = Region.from_element(
+                    child_xml, nsmap
+                )
+
+                if region is not None:
+                    child_regions.append(region)
+
+        return region_id, coords, child_regions
 
     @staticmethod
     def from_element(
