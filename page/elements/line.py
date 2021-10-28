@@ -30,9 +30,8 @@ class Line:
 
         coords: List[Point] = parse_points(points_str)
         textequiv_xmls = line_xml.findall("./TextEquiv", nsmap)
-        texts: List[Text] = []
-
-        for textequiv_xml in textequiv_xmls:
-            texts.append(Text.from_element(textequiv_xml, nsmap))
+        texts: List[Text] = [
+            Text.from_element(xml, nsmap) for xml in textequiv_xmls
+        ]
 
         return Line(line_id, coords, texts)

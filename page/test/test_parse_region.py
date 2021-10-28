@@ -57,7 +57,10 @@ class TestParseRegion(unittest.TestCase):
         self.assertEqual(len(region.children), 2)
         self.assertEqual(
             region.coords,
-            [Point(0, 0), Point(300, 400), Point(800, 600), Point(100, 200)]
+            [
+                Point(0, 0), Point(300, 400),
+                Point(800, 600), Point(100, 200)
+            ]
         )
 
         child1, child2 = region.children[0], region.children[1]
@@ -70,12 +73,18 @@ class TestParseRegion(unittest.TestCase):
         self.assertEqual(child1.region_type, TextRegionType.HEADING)
         self.assertEqual(
             child1.coords,
-            [Point(100, 200), Point(600, 200), Point(400, 500), Point(300, 900)]
+            [
+                Point(100, 200), Point(600, 200),
+                Point(400, 500), Point(300, 900)
+            ]
         )
 
         self.assertEqual(child2.id, "r02")
         self.assertEqual(child2.region_type, TextRegionType.PARAGRAPH)
         self.assertEqual(
             child2.coords,
-            [Point(100, 500), Point(600, 200), Point(100, 200), Point(300, 900)]
+            [
+                Point(100, 500), Point(600, 200),
+                Point(100, 200), Point(300, 900)
+            ]
         )
