@@ -104,5 +104,9 @@ class TextRegion(Region):
 
         region_id, coords, children = Region._parse_region(region_xml, nsmap)
 
-        # TODO: Parse lines!!
-        return TextRegion(region_id, coords, children, region_type, [])
+        line_xmls = region_xml.findall("./TextLine", nsmap)
+        lines: List[Line] = [
+            Line.from_element(line_xml, nsmap) for line_xml in line_xmls
+        ]
+
+        return TextRegion(region_id, coords, children, region_type, lines)
