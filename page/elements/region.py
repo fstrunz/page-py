@@ -1,5 +1,5 @@
 from abc import ABC
-from typing import List, Tuple
+from typing import List, Tuple, Optional
 from enum import Enum
 from page.elements.line import Line
 from page.elements.point import Point, parse_points
@@ -9,14 +9,19 @@ from lxml import etree
 
 
 class Region(ABC):
-    def __init__(self, coords: List[Point], children: List["Region"]):
+    def __init__(
+        self, region_id: str, coords: List[Point], children: List["Region"]
+    ):
+        self.id = region_id
         self.coords = coords
         self.children = children
 
     @staticmethod
-    def __parse_region(
+    def _parse_region(
         region_xml: etree.ElementBase, nsmap: NsMap
-    ) -> Tuple[List[Point], List["Region"]]:
+    ) -> Tuple[str, List[Point], List["Region"]]:
+        region_id = region_xml.get("id")
+
         coords_xml = region_xml.find("./Coords", nsmap)
         if coords_xml is None:
             raise PageXMLError("region is missing coordinates")
@@ -28,7 +33,18 @@ class Region(ABC):
         coords = parse_points(points_str)
 
         # TODO: Parse child regions.
-        return coords, []
+        return region_id, coords, []
+
+    @staticmethod
+    def from_element(
+        region_xml: etree.ElementBase, nsmap: NsMap
+    ) -> Optional["Region"]:
+        region_tag: str = region_xml.tag
+
+        if region_tag == "TextRegion":
+            return TextRegion.from_element(region_xml, nsmap)
+        else:
+            return None
 
 
 class TextRegionType(Enum):
@@ -53,24 +69,29 @@ class TextRegionType(Enum):
 
 class TextRegion(Region):
     def __init__(
-        self,
+        self, region_id: str,
         coords: List[Point], children: List[Region],
         region_type: TextRegionType, lines: List[Line]
     ):
-        super().__init__(coords, children)
+        super().__init__(region_id, coords, children)
         self.region_type = region_type
         self.lines = lines
 
     @staticmethod
-    def from_element(region_xml: etree.ElementBase, nsmap: NsMap) -> Region:
+    def from_element(
+        region_xml: etree.ElementBase, nsmap: NsMap
+    ) -> "TextRegion":
         region_type_name = region_xml.get("type")
+
+        if region_type_name is None:
+            raise PageXMLError("region is missing a type attribute")
 
         try:
             region_type = TextRegionType(region_type_name)
         except ValueError:
             raise PageXMLError(f"region has invalid type '{region_type_name}'")
 
-        coords, children = Region.__parse_region(region_xml, nsmap)
+        region_id, coords, children = Region._parse_region(region_xml, nsmap)
 
         # TODO: Parse lines!!
-        return TextRegion(coords, children, region_type, [])
+        return TextRegion(region_id, coords, children, region_type, [])
