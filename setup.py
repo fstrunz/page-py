@@ -4,6 +4,6 @@ setup(
     name='page-py',
     version='1.0',
     description='Library for dealing with PAGE XML files.',
-    requires=['lxml'],
-    packages=['page', 'python-dateutil']
+    install_requires=['lxml>=4.6.0', 'python-dateutil>=2.8.0'],
+    packages=['page']
 )
