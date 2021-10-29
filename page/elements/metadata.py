@@ -41,3 +41,21 @@ class Metadata:
             comments = comments_xml.text or ""
 
         return Metadata(creator, created, last_change, comments)
+
+    def to_element(self, nsmap: NsMap) -> etree.ElementBase:
+        meta_xml = etree.Element("Metadata", nsmap=nsmap)
+
+        creator_xml = etree.SubElement(meta_xml, "Creator", nsmap=nsmap)
+        creator_xml.text = self.creator
+
+        created_xml = etree.SubElement(meta_xml, "Created", nsmap=nsmap)
+        created_xml.text = self.created.isoformat()
+
+        last_change_xml = etree.SubElement(meta_xml, "LastChange", nsmap=nsmap)
+        last_change_xml.text = self.last_change.isoformat()
+
+        if self.comments is not None:
+            comments_xml = etree.SubElement(meta_xml, "Comments", nsmap=nsmap)
+            comments_xml.text = self.comments
+
+        return meta_xml

@@ -1,6 +1,7 @@
 import unittest
 from page.exceptions import PageXMLError
 from page.elements import Metadata
+import page.test.assert_utils as utils
 from lxml import etree
 
 SIMPLE_METADATA = etree.XML(
@@ -87,3 +88,14 @@ class TestParseMetadata(unittest.TestCase):
             PageXMLError,
             lambda: Metadata.from_element(MALFORMED_DATE_METADATA, {})
         )
+
+    def test_invert(self):
+        for xml in [
+            SIMPLE_METADATA,
+            NO_COMMENT_METADATA,
+            EMPTY_CREATOR_METADATA,
+            EMPTY_COMMENT_METADATA
+        ]:
+            utils.assert_same_descendant_tags(
+                self, Metadata.from_element(xml, {}).to_element({}), xml
+            )
