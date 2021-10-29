@@ -3,7 +3,7 @@ from page.elements.text import Text
 from page.exceptions import PageXMLError
 from page.constants import NsMap
 from lxml import etree
-from typing import List
+from typing import List, Dict, Optional
 
 
 class Line:
@@ -30,8 +30,32 @@ class Line:
 
         coords: List[Point] = parse_points(points_str)
         textequiv_xmls = line_xml.findall("./TextEquiv", nsmap)
-        texts: List[Text] = [
-            Text.from_element(xml, nsmap) for xml in textequiv_xmls
-        ]
 
-        return Line(line_id, coords, texts)
+        texts: List[Text] = []
+        index_dict: Dict[int, Text] = {}
+
+        for xml in textequiv_xmls:
+            text = Text.from_element(xml, nsmap)
+            if text.index is not None:
+                index_dict[text.index] = text
+            texts.append(text)
+
+        if index_dict:
+            return IndexedLine(line_id, coords, texts, index_dict)
+        else:
+            return Line(line_id, coords, texts)
+
+
+class IndexedLine(Line):
+    def __init__(
+        self, line_id: str, coords: List[Point],
+        texts: List[Text], index_dict: Dict[int, Text]
+    ):
+        super().__init__(line_id, coords, texts)
+        self.__index_dict = index_dict
+
+    def get_text_from_index(self, index: int) -> Optional[Text]:
+        if index in self.__index_dict:
+            return self.__index_dict[index]
+        else:
+            return None
