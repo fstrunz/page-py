@@ -2,7 +2,7 @@ import unittest
 from typing import Optional
 from lxml import etree
 from page.elements import Region, TextRegion, TextRegionType, Point
-
+from page.exceptions import PageXMLError
 
 SIMPLE_TEXT_REGION = etree.XML(
     """<TextRegion id="r0" type="paragraph">
@@ -17,6 +17,60 @@ NESTED_TEXT_REGIONS = etree.XML(
             <Coords points="100,200 600,200 400,500 300,900" />
         </TextRegion>
         <TextRegion id="r02" type="paragraph">
+            <Coords points="100,500 600,200 100,200 300,900" />
+        </TextRegion>
+    </TextRegion>"""
+)
+
+NO_COORDS_TEXT_REGION_1 = etree.XML(
+    """<TextRegion id="r0" type="caption">
+        <TextRegion id="r01" type="heading">
+            <Coords points="100,200 600,200 400,500 300,900" />
+        </TextRegion>
+        <TextRegion id="r02" type="paragraph">
+            <Coords points="100,500 600,200 100,200 300,900" />
+        </TextRegion>
+    </TextRegion>"""
+)
+
+NO_COORDS_TEXT_REGION_2 = etree.XML(
+    """<TextRegion id="r0" type="caption">
+        <Coords points="0,0 300,400 800,600 100,200" />
+        <TextRegion id="r01" type="heading">
+            <Coords points="100,200 600,200 400,500 300,900" />
+        </TextRegion>
+        <TextRegion id="r02" type="paragraph"></TextRegion>
+    </TextRegion>"""
+)
+
+NO_COORDS_TEXT_REGION_3 = etree.XML(
+    """<TextRegion id="r0" type="caption">
+        <Coords />
+    </TextRegion>"""
+)
+
+REGION_INVALID_TYPE_1 = etree.XML(
+    """<TextRegion id="r0">
+        <Coords points="0,0 300,400 800,600 100,200" />
+    </TextRegion>"""
+)
+
+REGION_INVALID_TYPE_2 = etree.XML(
+    """<TextRegion id="r0" type="𝐧𝐨𝐭 𝐚 𝐭𝐲𝐩𝐞">
+        <Coords points="0,0 300,400 800,600 100,200" />
+    </TextRegion>"""
+)
+
+TRAVERSE_CHILDREN = etree.XML(
+    """<TextRegion id="r8" type="floating">
+        <Coords points="0,0 300,400 800,600 100,200" />
+        <TextRegion id="r3" type="heading">
+            <Coords points="100,200 600,200 400,500 300,900" />
+        </TextRegion>
+        <NotARegion id="r1">
+            <Coords points="100,500 600,200 100,200 300,900" />
+        </NotARegion>
+        <TextRegion id="r4" type="paragraph">
             <Coords points="100,500 600,200 100,200 300,900" />
         </TextRegion>
     </TextRegion>"""
@@ -78,12 +132,30 @@ class TestParseRegion(unittest.TestCase):
             ]
         )
 
-        self.assertEqual(child2.id, "r02")
-        self.assertEqual(child2.region_type, TextRegionType.PARAGRAPH)
-        self.assertEqual(
-            child2.coords,
-            [
-                Point(100, 500), Point(600, 200),
-                Point(100, 200), Point(300, 900)
-            ]
-        )
+    def test_region_no_coords(self):
+        for test_xml in [
+            NO_COORDS_TEXT_REGION_1,
+            NO_COORDS_TEXT_REGION_2,
+            NO_COORDS_TEXT_REGION_3
+        ]:
+            self.assertRaises(
+                PageXMLError, lambda: TextRegion.from_element(test_xml, {})
+            )
+
+    def test_region_invalid_type(self):
+        for test_xml in [
+            REGION_INVALID_TYPE_1,
+            REGION_INVALID_TYPE_2
+        ]:
+            self.assertRaises(
+                PageXMLError,
+                lambda: TextRegion.from_element(test_xml, {})
+            )
+
+    def test_region_traverse_children(self):
+        region: TextRegion = TextRegion.from_element(TRAVERSE_CHILDREN, {})
+        region_ids = [child.id for child in region.children]
+        self.assertIn("r3", region_ids)
+        self.assertIn("r4", region_ids)
+        self.assertNotIn("r8", region_ids)  # invalid region
+        self.assertNotIn("r1", region_ids)  # parent

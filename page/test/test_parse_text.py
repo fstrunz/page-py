@@ -7,24 +7,27 @@ SIMPLE_TEXT_EQUIV = etree.XML(
     """<TextEquiv>
         <PlainText>test</PlainText>
         <Unicode>𝓽𝓮𝓼𝓽</Unicode>
-    </TextEquiv>
-    """
+    </TextEquiv>"""
+)
+
+NO_UNICODE_TAG_TEXT_EQUIV = etree.XML(
+    """<TextEquiv>
+        <PlainText>test</PlainText>
+    </TextEquiv>"""
 )
 
 INDEXED_TEXT_EQUIV = etree.XML(
     """<TextEquiv index="56">
         <PlainText>test</PlainText>
         <Unicode>𝓽𝓮𝓼𝓽</Unicode>
-    </TextEquiv>
-    """
+    </TextEquiv>"""
 )
 
 INVALID_INDEXED_TEXT_EQUIV = etree.XML(
     """<TextEquiv index="☢💙  𝐍𝕆ｔ 𝓐𝕟 ιη𝓓𝑒Ｘ  💙💥">
         <PlainText>test</PlainText>
         <Unicode>𝓽𝓮𝓼𝓽</Unicode>
-    </TextEquiv>
-    """
+    </TextEquiv>"""
 )
 
 
@@ -41,4 +44,10 @@ class TestParseText(unittest.TestCase):
         self.assertRaises(
             PageXMLError,
             lambda: Text.from_element(INVALID_INDEXED_TEXT_EQUIV, {})
+        )
+
+    def test_no_unicode_tag(self):
+        self.assertRaises(
+            PageXMLError,
+            lambda: Text.from_element(NO_UNICODE_TAG_TEXT_EQUIV, {})
         )

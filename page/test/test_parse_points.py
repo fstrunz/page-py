@@ -64,6 +64,9 @@ class TestParsePoints(unittest.TestCase):
             )
             self.assertRaises(PageXMLError, lambda: parse_points(points_str))
 
+    def test_parse_invalid_coords(self):
+        self.assertRaises(PageXMLError, lambda: parse_points("a,b c,d"))
+
     def test_point_order_refl_antisymm(self):
         for i in range(100):
             x = random.randrange(-1000, 1000)
@@ -75,3 +78,31 @@ class TestParsePoints(unittest.TestCase):
             self.assertLessEqual(p, p)
             # Antisymmetry (a <= b and a >= b -> a = b for all a, b)
             self.assertEqual(p, p)
+
+    def test_point_hash(self):
+        # For any points a, b: hash(a) == hash(b) => a = b.
+
+        for i in range(10000):
+            x1 = random.randrange(-100, 100)
+            y1 = random.randrange(-100, 100)
+
+            x2 = random.randrange(-100, 100)
+            y2 = random.randrange(-100, 100)
+
+            p1 = Point(x1, y1)
+            p2 = Point(x2, y2)
+
+            if hash(p1) == hash(p2):
+                self.assertEqual(p1, p2)
+
+            # Contrapositive
+            if p1 != p2:
+                self.assertNotEqual(hash(p1), hash(p2))
+
+    def test_point_repr(self):
+        for i in range(100):
+            x = random.randrange(-1000, 1000)
+            y = random.randrange(-1000, 1000)
+            p = Point(x, y)
+            self.assertEqual(f"{p}", f"({int(x)}, {int(y)})")
+            self.assertEqual(str(p), repr(p))
