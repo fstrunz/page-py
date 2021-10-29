@@ -1,8 +1,8 @@
-from abc import ABC
+from abc import ABC, abstractmethod
 from typing import List, Tuple, Optional
 from enum import Enum
 from page.elements.line import Line
-from page.elements.point import Point, parse_points
+from page.elements.point import Point, parse_points, points_to_string
 from page.constants import NsMap
 from page.exceptions import PageXMLError
 from lxml import etree
@@ -46,16 +46,33 @@ class Region(ABC):
 
         return region_id, coords, child_regions
 
+    def _create_region_base_element(
+        self, tag: str, nsmap: NsMap
+    ) -> etree.ElementBase:
+        region_xml = etree.Element(tag, attrib={"id": self.id}, nsmap=nsmap)
+        coords_xml = etree.SubElement(region_xml, "Coords", nsmap=nsmap)
+        coords_xml.set("points", points_to_string(self.coords))
+
+        for child in self.children:
+            region_xml.append(child.to_element(nsmap))
+
+        return region_xml
+
     @staticmethod
     def from_element(
         region_xml: etree.ElementBase, nsmap: NsMap
     ) -> Optional["Region"]:
         region_tag: str = region_xml.tag
 
+        # TODO: Implement other region tags
         if region_tag == "TextRegion":
             return TextRegion.from_element(region_xml, nsmap)
         else:
             return None
+
+    @abstractmethod
+    def to_element(nsmap: NsMap) -> etree.ElementBase:
+        return
 
 
 class TextRegionType(Enum):
@@ -87,6 +104,7 @@ class TextRegion(Region):
         super().__init__(region_id, coords, children)
         self.region_type = region_type
         self.lines = lines
+        # TODO: TextRegion can contain its own TextEquiv (and TextStyle)
 
     @staticmethod
     def from_element(
@@ -110,3 +128,11 @@ class TextRegion(Region):
         ]
 
         return TextRegion(region_id, coords, children, region_type, lines)
+
+    def to_element(self, nsmap: NsMap) -> etree.ElementBase:
+        region_xml = self._create_region_base_element("TextRegion", nsmap)
+
+        for line in self.lines:
+            region_xml.append(line.to_element(nsmap))
+
+        return region_xml

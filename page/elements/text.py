@@ -33,3 +33,20 @@ class Text:
             text = Text(index, unicode_xml.text, plaintext_xml.text)
 
         return text
+
+    def to_element(self, nsmap: NsMap) -> etree.ElementBase:
+        textequiv_xml = etree.Element("TextEquiv", nsmap=nsmap)
+
+        if self.index is not None:
+            textequiv_xml.set("index", str(self.index))
+
+        unicode_xml = etree.SubElement(textequiv_xml, "Unicode", nsmap=nsmap)
+        unicode_xml.text = self.unicode
+
+        if self.plain_text is not None:
+            plaintext_xml = etree.SubElement(
+                textequiv_xml, "PlainText", nsmap=nsmap
+            )
+            plaintext_xml.text = self.plain_text
+
+        return textequiv_xml

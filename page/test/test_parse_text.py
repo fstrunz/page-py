@@ -2,6 +2,7 @@ import unittest
 from lxml import etree
 from page.elements import Text
 from page.exceptions import PageXMLError
+import page.test.assert_utils as utils
 
 SIMPLE_TEXT_EQUIV = etree.XML(
     """<TextEquiv>
@@ -51,3 +52,14 @@ class TestParseText(unittest.TestCase):
             PageXMLError,
             lambda: Text.from_element(NO_UNICODE_TAG_TEXT_EQUIV, {})
         )
+
+    def test_parse_text_invert(self):
+        for xml in [
+            SIMPLE_TEXT_EQUIV,
+            INDEXED_TEXT_EQUIV
+        ]:
+            utils.assert_same_descendant_tags(
+                self,
+                Text.from_element(xml, {}).to_element({}),
+                xml
+            )

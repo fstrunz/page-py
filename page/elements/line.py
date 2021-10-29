@@ -1,4 +1,4 @@
-from page.elements.point import Point, parse_points
+from page.elements.point import Point, parse_points, points_to_string
 from page.elements.text import Text
 from page.exceptions import PageXMLError
 from page.constants import NsMap
@@ -44,6 +44,19 @@ class Line:
             return IndexedLine(line_id, coords, texts, index_dict)
         else:
             return Line(line_id, coords, texts)
+
+    def to_element(self, nsmap: NsMap) -> etree.ElementBase:
+        line_xml = etree.Element(
+            "TextLine", attrib={"id": self.id}, nsmap=nsmap
+        )
+
+        coords_xml = etree.SubElement(line_xml, "Coords", nsmap=nsmap)
+        coords_xml.set("points", points_to_string(self.coords))
+
+        for text in self.texts:
+            line_xml.append(text.to_element(nsmap))
+
+        return line_xml
 
 
 class IndexedLine(Line):

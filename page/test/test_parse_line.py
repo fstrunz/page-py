@@ -1,6 +1,7 @@
 import unittest
 from lxml import etree
 from page.elements import Line, IndexedLine, Text, Point
+import page.test.assert_utils as utils
 
 SIMPLE_TEXT_LINE = etree.XML(
     """<TextLine id="l0">
@@ -50,3 +51,14 @@ class TestParseLine(unittest.TestCase):
         indexed_line: IndexedLine = line
         self.assertEqual(indexed_line.get_text_from_index(0), text0)
         self.assertEqual(indexed_line.get_text_from_index(1), text1)
+
+    def test_parse_line_invert(self):
+        for xml in [
+            SIMPLE_TEXT_LINE,
+            INDEXED_TEXT_LINE
+        ]:
+            utils.assert_same_descendant_tags(
+                self,
+                Line.from_element(xml, {}).to_element({}),
+                xml
+            )

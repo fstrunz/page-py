@@ -3,6 +3,7 @@ from typing import Optional
 from lxml import etree
 from page.elements import Region, TextRegion, TextRegionType, Point
 from page.exceptions import PageXMLError
+import page.test.assert_utils as utils
 
 SIMPLE_TEXT_REGION = etree.XML(
     """<TextRegion id="r0" type="paragraph">
@@ -159,3 +160,14 @@ class TestParseRegion(unittest.TestCase):
         self.assertIn("r4", region_ids)
         self.assertNotIn("r8", region_ids)  # invalid region
         self.assertNotIn("r1", region_ids)  # parent
+
+    def test_parse_text_region_invert(self):
+        for test_xml in [
+            SIMPLE_TEXT_REGION,
+            NESTED_TEXT_REGIONS
+        ]:
+            utils.assert_same_descendant_tags(
+                self,
+                TextRegion.from_element(test_xml, {}).to_element({}),
+                test_xml
+            )
