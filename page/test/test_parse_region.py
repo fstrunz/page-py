@@ -1,8 +1,7 @@
 import unittest
 from typing import Optional
 from lxml import etree
-from page.elements.region import Region, TextRegion, TextRegionType
-from page.elements.point import Point
+from page.elements import Region, TextRegion, TextRegionType, Point
 
 
 SIMPLE_TEXT_REGION = etree.XML(

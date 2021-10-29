@@ -1,7 +1,6 @@
 from typing import Dict, TextIO
 from lxml import etree
-from page.elements.region import Region
-from page.elements.metadata import Metadata
+from page.elements import Metadata, Region
 from page.constants import DEFAULT_NAMESPACE_MAP, NsMap
 
 

@@ -1,6 +1,6 @@
 import unittest
 from lxml import etree
-from page.elements.text import Text
+from page.elements import Text
 from page.exceptions import PageXMLError
 
 SIMPLE_TEXT_EQUIV = etree.XML(

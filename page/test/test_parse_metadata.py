@@ -1,6 +1,6 @@
 import unittest
 from page.exceptions import PageXMLError
-from page.elements.metadata import Metadata
+from page.elements import Metadata
 from lxml import etree
 
 SIMPLE_METADATA = etree.XML(

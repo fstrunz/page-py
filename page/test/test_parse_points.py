@@ -2,7 +2,7 @@ import unittest
 import rstr
 import re
 import random
-from page.elements.point import Point, parse_points, points_to_string
+from page.elements import Point, parse_points, points_to_string
 from page.exceptions import PageXMLError
 
 

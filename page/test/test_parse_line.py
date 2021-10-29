@@ -1,8 +1,6 @@
 import unittest
 from lxml import etree
-from page.elements.line import Line
-from page.elements.text import Text
-from page.elements.point import Point
+from page.elements import Line, Text, Point
 
 SIMPLE_TEXT_LINE = etree.XML(
     """<TextLine id="l0">
