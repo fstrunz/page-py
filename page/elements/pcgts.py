@@ -1,11 +1,13 @@
 from typing import Optional, TextIO
-from page.elements import Metadata, Page
+from page.elements.metadata import Metadata
+from page.elements.page import Page
+from page.elements.element import Element
 from page.exceptions import PageXMLError
 from page.constants import NsMap
 from lxml import etree
 
 
-class PcGts:
+class PcGts(Element):
     def __init__(
         self, pc_gts_id: Optional[str], metadata: Metadata, page: Page
     ):

@@ -1,11 +1,12 @@
 from typing import Tuple, List, Optional
 from lxml import etree
-from page.elements import Region
+from page.elements.region import Region
+from page.elements.element import Element
 from page.constants import NsMap
 from page.exceptions import PageXMLError
 
 
-class Page:
+class Page(Element):
     def __init__(
         self,
         image_size: Tuple[int, int], image_filename: str,

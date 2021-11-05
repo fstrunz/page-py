@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import List, Tuple, Optional
 from enum import Enum
+from page.elements.element import Element
 from page.elements.line import Line
 from page.elements.point import Point, parse_points, points_to_string
 from page.constants import NsMap
@@ -8,7 +9,7 @@ from page.exceptions import PageXMLError
 from lxml import etree
 
 
-class Region(ABC):
+class Region(Element, ABC):
     def __init__(
         self, region_id: str, coords: List[Point], children: List["Region"]
     ):
@@ -37,7 +38,7 @@ class Region(ABC):
         for child_xml in region_xml.iterchildren():
             if child_xml.tag.endswith("Region"):
                 # try to parse this region
-                region: Optional[Region] = Region.from_element(
+                region: Optional[Region] = Region.try_from_element(
                     child_xml, nsmap
                 )
 
@@ -59,7 +60,7 @@ class Region(ABC):
         return region_xml
 
     @staticmethod
-    def from_element(
+    def try_from_element(
         region_xml: etree.ElementBase, nsmap: NsMap
     ) -> Optional["Region"]:
         region_tag: str = region_xml.tag
@@ -69,6 +70,13 @@ class Region(ABC):
             return TextRegion.from_element(region_xml, nsmap)
         else:
             return None
+
+    @staticmethod
+    def from_element(region_xml: etree.ElementBase, nsmap: NsMap) -> "Region":
+        region = Region.try_from_element(region_xml, nsmap)
+        if region is None:
+            raise PageXMLError(f"Tag {region_xml.tag} is not a region tag")
+        return region
 
     @abstractmethod
     def to_element(nsmap: NsMap) -> etree.ElementBase:

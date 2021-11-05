@@ -3,10 +3,11 @@ from datetime import datetime
 from dateutil import parser as dateparser
 from lxml import etree
 from page.exceptions import PageXMLError
+from page.elements.element import Element
 from page.constants import NsMap
 
 
-class Metadata:
+class Metadata(Element):
     def __init__(
         self,
         creator: str,

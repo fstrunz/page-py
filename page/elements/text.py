@@ -1,12 +1,13 @@
 from dataclasses import dataclass
 from typing import Optional
 from page.exceptions import PageXMLError
+from page.elements import Element
 from page.constants import NsMap
 from lxml import etree
 
 
 @dataclass
-class Text:
+class Text(Element):
     index: Optional[int]
     unicode: str
     plain_text: Optional[str]

@@ -1,3 +1,4 @@
+from page.elements.element import Element
 from page.elements.line import Line, IndexedLine
 from page.elements.point import Point, parse_points, points_to_string
 from page.elements.metadata import Metadata
@@ -9,6 +10,7 @@ from page.elements.pcgts import PcGts
 # TODO: Words, Glyphs
 
 __all__ = [
+    "Element",
     "Line", "IndexedLine",
     "Point", "parse_points", "points_to_string",
     "Metadata",

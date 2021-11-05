@@ -1,3 +1,4 @@
+from page.elements.element import Element
 from page.elements.point import Point, parse_points, points_to_string
 from page.elements.text import Text
 from page.exceptions import PageXMLError
@@ -6,7 +7,7 @@ from lxml import etree
 from typing import List, Dict, Optional
 
 
-class Line:
+class Line(Element):
     def __init__(self, line_id: str, coords: List[Point], texts: List[Text]):
         self.id = line_id
         self.coords = coords
