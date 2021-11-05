@@ -44,7 +44,7 @@ class PcGts:
         tree = etree.parse(file)
         root_xml = tree.getroot()
 
-        if root_xml.tag != "PcGts":
+        if not root_xml.tag.endswith("PcGts"):
             # this is not a pagecontent file
             return None
 
