@@ -1,45 +1,21 @@
 import unittest
 from lxml import etree
-from page import Page
-from page.elements.region import TextRegion
+from page.elements import Page, TextRegion
 from page.exceptions import PageXMLError
 import page.test.assert_utils as utils
 
-NO_METADATA = etree.XML(
-    """<Page imageFilename="test.png" imageWidth="1024" imageHeight="768">
-    </Page>"""
-)
-
 EMPTY_PAGE = etree.XML(
     """<Page imageFilename="test.png" imageWidth="1024" imageHeight="768">
-        <Metadata>
-            <Creator>Test Creator</Creator>
-            <Created>2021-10-21T18:37:36</Created>
-            <LastChange>1970-01-01T00:00:00</LastChange>
-            <Comments>Test Comment</Comments>
-        </Metadata>
     </Page>"""
 )
 
 INVALID_PAGE_ATTRIBS = etree.XML(
     """<Page imageFilename="test.png" imageWidth="abc" imageHeight="768">
-        <Metadata>
-            <Creator>Test Creator</Creator>
-            <Created>2021-10-21T18:37:36</Created>
-            <LastChange>1970-01-01T00:00:00</LastChange>
-            <Comments>Test Comment</Comments>
-        </Metadata>
     </Page>"""
 )
 
 SIMPLE_PAGE = etree.XML(
     """<Page imageFilename="test.jpg" imageWidth="100" imageHeight="400">
-        <Metadata>
-            <Creator>Test Creator</Creator>
-            <Created>2021-10-21T18:37:36</Created>
-            <LastChange>1970-01-01T00:00:00</LastChange>
-            <Comments>Test Comment</Comments>
-        </Metadata>
         <TextRegion id="r0" type="paragraph">
             <Coords points="0,0 1,1 2,2" />
         </TextRegion>
@@ -48,12 +24,6 @@ SIMPLE_PAGE = etree.XML(
 
 COMPLEX_PAGE = etree.XML(
     """<Page imageFilename="test.tga" imageWidth="392" imageHeight="400">
-        <Metadata>
-            <Creator>Test Creator</Creator>
-            <Created>2021-10-21T18:37:36</Created>
-            <LastChange>1970-01-01T00:00:00</LastChange>
-            <Comments>Test Comment</Comments>
-        </Metadata>
         <TextRegion id="r0" type="paragraph">
             <Coords points="0,0 1,1 2,2" />
             <TextRegion id="r01" type="paragraph">
@@ -69,12 +39,6 @@ COMPLEX_PAGE = etree.XML(
 
 
 class TestParsePage(unittest.TestCase):
-    def test_parse_page_no_metadata(self):
-        self.assertRaises(
-            PageXMLError,
-            lambda: Page.from_element(NO_METADATA, {})
-        )
-
     def test_parse_empty_page(self):
         page = Page.from_element(EMPTY_PAGE, {})
         self.assertEqual(page.image_filename, "test.png")
