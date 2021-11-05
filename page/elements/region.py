@@ -63,7 +63,7 @@ class Region(Element, ABC):
     def try_from_element(
         region_xml: etree.ElementBase, nsmap: NsMap
     ) -> Optional["Region"]:
-        region_tag: str = region_xml.tag
+        region_tag: str = etree.QName(region_xml.tag).localname
 
         # TODO: Implement other region tags
         if region_tag == "TextRegion":

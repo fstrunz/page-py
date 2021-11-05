@@ -45,8 +45,9 @@ class PcGts(Element):
     def from_file(file: TextIO) -> Optional["PcGts"]:
         tree = etree.parse(file)
         root_xml = tree.getroot()
+        root_tag: str = etree.QName(root_xml.tag).localname
 
-        if not root_xml.tag.endswith("PcGts"):
+        if root_tag != "PcGts":
             # this is not a pagecontent file
             return None
 
