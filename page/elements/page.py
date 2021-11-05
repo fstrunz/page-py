@@ -33,7 +33,7 @@ class Page(Element):
 
         for xml in root_xml.iterchildren():
             # try to parse every direct child element as a region
-            region_xml: Optional[Region] = Region.from_element(xml, nsmap)
+            region_xml: Optional[Region] = Region.try_from_element(xml, nsmap)
             if region_xml is not None:
                 regions.append(region_xml)
 

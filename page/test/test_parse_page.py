@@ -24,6 +24,13 @@ SIMPLE_PAGE = etree.XML(
 
 COMPLEX_PAGE = etree.XML(
     """<Page imageFilename="test.tga" imageWidth="392" imageHeight="400">
+        <ReadingOrder>
+            <OrderedGroup id="g1">
+                <RegionRefIndexed index="0" regionRef="r0" />
+                <RegionRefIndexed index="1" regionRef="r1" />
+                <RegionRefIndexed index="2" regionRef="r2" />
+            </OrderedGroup>
+        </ReadingOrder>
         <TextRegion id="r0" type="paragraph">
             <Coords points="0,0 1,1 2,2" />
             <TextRegion id="r01" type="paragraph">
@@ -33,8 +40,10 @@ COMPLEX_PAGE = etree.XML(
         <TextRegion id="r1" type="paragraph">
             <Coords points="2,2 1,1 0,1" />
         </TextRegion>
-    </Page>
-    """
+        <NotARegion id="r2">
+            <Coords points="0,1 12,1 0,1" />
+        </NotARegion>
+    </Page>"""
 )
 
 
@@ -67,15 +76,30 @@ class TestParsePage(unittest.TestCase):
         region_ids = {region.id for region in page.regions}
         self.assertIn("r0", region_ids)
         self.assertIn("r1", region_ids)
+        self.assertNotIn("r2", region_ids)
         self.assertNotIn("r01", region_ids)
 
         for region in page.regions:
             self.assertIsInstance(region, TextRegion)
 
     def test_parse_page_invert(self):
-        for xml in [EMPTY_PAGE, SIMPLE_PAGE, COMPLEX_PAGE]:
+        for xml in [EMPTY_PAGE, SIMPLE_PAGE]:
             utils.assert_same_descendant_tags(
                 self,
                 Page.from_element(xml, {}).to_element({}),
                 xml
             )
+
+        # we cannot use assert_same_descendant_tags for
+        # COMPLEX_PAGE because from_element filters out non-regions
+        # like NotARegion.
+        #
+        # instead, check if it contains all valid TextRegions
+
+        page_xml = Page.from_element(COMPLEX_PAGE, {}).to_element({})
+        region_ids = page_xml.xpath("./TextRegion/@id")
+
+        self.assertIn("r0", region_ids)
+        self.assertIn("r1", region_ids)
+        self.assertNotIn("r2", region_ids)
+        self.assertNotIn("g1", region_ids)
