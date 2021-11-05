@@ -4,6 +4,7 @@ from page.elements.metadata import Metadata
 from page.elements.region import Region, TextRegion, TextRegionType
 from page.elements.text import Text
 from page.elements.page import Page
+from page.elements.pcgts import PcGts
 
 # TODO: Words, Glyphs
 
@@ -13,5 +14,6 @@ __all__ = [
     "Metadata",
     "Region", "TextRegion", "TextRegionType",
     "Text",
-    "Page"
+    "Page",
+    "PcGts"
 ]
