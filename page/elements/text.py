@@ -29,9 +29,9 @@ class Text(Element):
             raise PageXMLError("TextEquiv is missing Unicode tag")
 
         if plaintext_xml is None:
-            text = Text(index, unicode_xml.text, None)
+            text = Text(index, unicode_xml.text or "", None)
         else:
-            text = Text(index, unicode_xml.text, plaintext_xml.text)
+            text = Text(index, unicode_xml.text or "", plaintext_xml.text)
 
         return text
 

@@ -17,6 +17,12 @@ NO_UNICODE_TAG_TEXT_EQUIV = etree.XML(
     </TextEquiv>"""
 )
 
+EMPTY_UNICODE_TAG_TEXT_EQUIV = etree.XML(
+    """<TextEquiv>
+        <Unicode />
+    </TextEquiv>"""
+)
+
 INDEXED_TEXT_EQUIV = etree.XML(
     """<TextEquiv index="56">
         <PlainText>test</PlainText>
@@ -40,6 +46,10 @@ class TestParseText(unittest.TestCase):
     def test_indexed_text(self):
         text: Text = Text.from_element(INDEXED_TEXT_EQUIV, {})
         self.assertEqual(text, Text(56, "𝓽𝓮𝓼𝓽", "test"))
+
+    def test_empty_unicode_tag(self):
+        text: Text = Text.from_element(EMPTY_UNICODE_TAG_TEXT_EQUIV, {})
+        self.assertEqual(text, Text(None, "", None))
 
     def test_invalid_text(self):
         self.assertRaises(
