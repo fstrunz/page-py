@@ -37,7 +37,7 @@ class Element(ABC):
         pass
 
     @abstractmethod
-    def to_element(nsmap: NsMap) -> etree.ElementBase:
+    def to_element(self, nsmap: NsMap) -> etree.ElementBase:
         """Writes an Element into an lxml element.
 
         Parameters
