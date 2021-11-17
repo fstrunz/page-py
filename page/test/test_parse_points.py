@@ -96,8 +96,8 @@ class TestParsePoints(unittest.TestCase):
                 self.assertEqual(hash(p1), hash(p2))
 
             # Contrapositive
-            if p1 != p2:
-                self.assertNotEqual(hash(p1), hash(p2))
+            if hash(p1) != hash(p2):
+                self.assertNotEqual(p1, p2)
 
     def test_point_repr(self):
         for i in range(100):

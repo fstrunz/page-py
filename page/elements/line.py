@@ -1,5 +1,5 @@
 from page.elements.element import Element
-from page.elements.point import Point, parse_points, points_to_string
+from page.elements.coords import Coordinates
 from page.elements.text import Text
 from page.exceptions import PageXMLError
 from page.constants import NsMap
@@ -8,7 +8,7 @@ from typing import List, Dict, Optional
 
 
 class Line(Element):
-    def __init__(self, line_id: str, coords: List[Point], texts: List[Text]):
+    def __init__(self, line_id: str, coords: Coordinates, texts: List[Text]):
         self.id = line_id
         self.coords = coords
         self.texts = texts
@@ -23,13 +23,7 @@ class Line(Element):
         if coords_xml is None:
             raise PageXMLError("TextLine is missing Coords")
 
-        points_str = coords_xml.get("points")
-        if points_str is None:
-            raise PageXMLError(
-                "Coords element of TextLine has no points attribute"
-            )
-
-        coords: List[Point] = parse_points(points_str)
+        coords: Coordinates = Coordinates.from_element(coords_xml, nsmap)
         textequiv_xmls = line_xml.findall("./TextEquiv", nsmap)
 
         texts: List[Text] = []
@@ -50,9 +44,7 @@ class Line(Element):
         line_xml = etree.Element(
             "TextLine", attrib={"id": self.id}, nsmap=nsmap
         )
-
-        coords_xml = etree.SubElement(line_xml, "Coords", nsmap=nsmap)
-        coords_xml.set("points", points_to_string(self.coords))
+        line_xml.append(self.coords.to_element(nsmap))
 
         for text in self.texts:
             line_xml.append(text.to_element(nsmap))
@@ -62,7 +54,7 @@ class Line(Element):
 
 class IndexedLine(Line):
     def __init__(
-        self, line_id: str, coords: List[Point],
+        self, line_id: str, coords: Coordinates,
         texts: List[Text], index_dict: Dict[int, Text]
     ):
         super().__init__(line_id, coords, texts)
