@@ -80,7 +80,7 @@ class TestParsePoints(unittest.TestCase):
             self.assertEqual(p, p)
 
     def test_point_hash(self):
-        # For any points a, b: hash(a) == hash(b) => a = b.
+        # For any points a, b: a = b => hash(a) = hash(b).
 
         for i in range(10000):
             x1 = random.randrange(-100, 100)
@@ -92,8 +92,8 @@ class TestParsePoints(unittest.TestCase):
             p1 = Point(x1, y1)
             p2 = Point(x2, y2)
 
-            if hash(p1) == hash(p2):
-                self.assertEqual(p1, p2)
+            if p1 == p2:
+                self.assertEqual(hash(p1), hash(p2))
 
             # Contrapositive
             if p1 != p2:

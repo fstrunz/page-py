@@ -88,7 +88,7 @@ class TestParseRegion(unittest.TestCase):
         self.assertEqual(text_region.children, [])
         self.assertEqual(text_region.region_type, TextRegionType.PARAGRAPH)
         self.assertEqual(
-            text_region.coords,
+            text_region.coords.points,
             [Point(0, 0), Point(300, 400), Point(800, 600), Point(100, 200)]
         )
 
@@ -110,7 +110,7 @@ class TestParseRegion(unittest.TestCase):
         self.assertEqual(region.region_type, TextRegionType.CAPTION)
         self.assertEqual(len(region.children), 2)
         self.assertEqual(
-            region.coords,
+            region.coords.points,
             [
                 Point(0, 0), Point(300, 400),
                 Point(800, 600), Point(100, 200)
@@ -126,7 +126,7 @@ class TestParseRegion(unittest.TestCase):
         self.assertEqual(child1.id, "r01")
         self.assertEqual(child1.region_type, TextRegionType.HEADING)
         self.assertEqual(
-            child1.coords,
+            child1.coords.points,
             [
                 Point(100, 200), Point(600, 200),
                 Point(400, 500), Point(300, 900)

@@ -2,8 +2,8 @@ from abc import ABC, abstractmethod
 from typing import List, Tuple, Optional
 from enum import Enum
 from page.elements.element import Element
+from page.elements.coords import Coordinates
 from page.elements.line import Line
-from page.elements.point import Point, parse_points, points_to_string
 from page.constants import NsMap
 from page.exceptions import PageXMLError
 from lxml import etree
@@ -11,7 +11,7 @@ from lxml import etree
 
 class Region(Element, ABC):
     def __init__(
-        self, region_id: str, coords: List[Point], children: List["Region"]
+        self, region_id: str, coords: Coordinates, children: List["Region"]
     ):
         self.id = region_id
         self.coords = coords
@@ -20,19 +20,14 @@ class Region(Element, ABC):
     @staticmethod
     def _parse_region(
         region_xml: etree.ElementBase, nsmap: NsMap
-    ) -> Tuple[str, List[Point], List["Region"]]:
+    ) -> Tuple[str, Coordinates, List["Region"]]:
         region_id = region_xml.get("id")
 
         coords_xml = region_xml.find("./Coords", nsmap)
         if coords_xml is None:
             raise PageXMLError("region is missing coordinates")
 
-        points_str = coords_xml.get("points")
-        if points_str is None:
-            raise PageXMLError("Coords element is missing 'points' attribute")
-
-        coords = parse_points(points_str)
-
+        coords = Coordinates.from_element(coords_xml, nsmap)
         child_regions = []
 
         for child_xml in region_xml.iterchildren():
@@ -51,8 +46,7 @@ class Region(Element, ABC):
         self, tag: str, nsmap: NsMap
     ) -> etree.ElementBase:
         region_xml = etree.Element(tag, attrib={"id": self.id}, nsmap=nsmap)
-        coords_xml = etree.SubElement(region_xml, "Coords", nsmap=nsmap)
-        coords_xml.set("points", points_to_string(self.coords))
+        region_xml.append(self.coords.to_element(nsmap))
 
         for child in self.children:
             region_xml.append(child.to_element(nsmap))
@@ -106,7 +100,7 @@ class TextRegionType(Enum):
 class TextRegion(Region):
     def __init__(
         self, region_id: str,
-        coords: List[Point], children: List[Region],
+        coords: Coordinates, children: List[Region],
         region_type: TextRegionType, lines: List[Line]
     ):
         super().__init__(region_id, coords, children)
