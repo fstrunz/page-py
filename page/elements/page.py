@@ -4,17 +4,14 @@ from page.elements.region import Region
 from page.elements.element import Element
 from page.constants import NsMap
 from page.exceptions import PageXMLError
+from dataclasses import dataclass
 
 
+@dataclass
 class Page(Element):
-    def __init__(
-        self,
-        image_size: Tuple[int, int], image_filename: str,
-        regions: List[Region]
-    ):
-        self.image_size = image_size
-        self.image_filename = image_filename
-        self.regions = regions
+    image_size: Tuple[int, int]
+    image_filename: str
+    regions: List[Region]
 
     @staticmethod
     def from_element(

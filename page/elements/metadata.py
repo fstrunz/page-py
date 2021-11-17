@@ -15,6 +15,7 @@ class Metadata(Element):
         last_change: datetime,
         comments: Optional[str],
     ):
+        super().__init__()
         self.creator = creator
         self.comments = comments
         self.created = created

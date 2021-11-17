@@ -64,7 +64,7 @@ class TestParsePage(unittest.TestCase):
         self.assertEqual(page.image_filename, "test.jpg")
         self.assertEqual(page.image_size, (100, 400))
         self.assertEqual(len(page.regions), 1)
-        self.assertEqual(page.regions[0].id, "r0")
+        self.assertEqual(page.regions[0].region_id, "r0")
         self.assertIsInstance(page.regions[0], TextRegion)
 
     def test_parse_complex_page(self):
@@ -73,7 +73,7 @@ class TestParsePage(unittest.TestCase):
         self.assertEqual(page.image_size, (392, 400))
         self.assertEqual(len(page.regions), 2)
 
-        region_ids = {region.id for region in page.regions}
+        region_ids = {region.region_id for region in page.regions}
         self.assertIn("r0", region_ids)
         self.assertIn("r1", region_ids)
         self.assertNotIn("r2", region_ids)

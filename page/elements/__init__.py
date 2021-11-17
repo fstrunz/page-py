@@ -10,8 +10,6 @@ from page.elements.glyph import Glyph
 from page.elements.page import Page
 from page.elements.pcgts import PcGts
 
-# TODO: Words, Glyphs
-
 __all__ = [
     "Element",
     "Line", "IndexedLine",

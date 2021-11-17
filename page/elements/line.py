@@ -1,17 +1,19 @@
 from page.elements.element import Element
 from page.elements.coords import Coordinates
 from page.elements.text import Text
+from page.elements.indexed import IndexedElement
 from page.exceptions import PageXMLError
 from page.constants import NsMap
 from lxml import etree
-from typing import List, Dict, Optional
+from typing import List
+from dataclasses import dataclass
 
 
+@dataclass
 class Line(Element):
-    def __init__(self, line_id: str, coords: Coordinates, texts: List[Text]):
-        self.id = line_id
-        self.coords = coords
-        self.texts = texts
+    line_id: str
+    coords: Coordinates
+    texts: List[Text]
 
     @staticmethod
     def from_element(line_xml: etree.ElementBase, nsmap: NsMap) -> "Line":
@@ -27,22 +29,22 @@ class Line(Element):
         textequiv_xmls = line_xml.findall("./TextEquiv", nsmap)
 
         texts: List[Text] = []
-        index_dict: Dict[int, Text] = {}
+        has_indices = False
 
         for xml in textequiv_xmls:
             text = Text.from_element(xml, nsmap)
-            if text.index is not None:
-                index_dict[text.index] = text
+            if not has_indices and text.index is not None:
+                has_indices = True
             texts.append(text)
 
-        if index_dict:
-            return IndexedLine(line_id, coords, texts, index_dict)
+        if has_indices:
+            return IndexedLine(line_id, coords, texts)
         else:
             return Line(line_id, coords, texts)
 
     def to_element(self, nsmap: NsMap) -> etree.ElementBase:
         line_xml = etree.Element(
-            "TextLine", attrib={"id": self.id}, nsmap=nsmap
+            "TextLine", attrib={"id": self.line_id}, nsmap=nsmap
         )
         line_xml.append(self.coords.to_element(nsmap))
 
@@ -52,16 +54,9 @@ class Line(Element):
         return line_xml
 
 
-class IndexedLine(Line):
-    def __init__(
-        self, line_id: str, coords: Coordinates,
-        texts: List[Text], index_dict: Dict[int, Text]
-    ):
+class IndexedLine(Line, IndexedElement[Text]):
+    def __init__(self, line_id: str, coords: Coordinates, texts: List[Text]):
         super().__init__(line_id, coords, texts)
-        self.__index_dict = index_dict
-
-    def get_text_from_index(self, index: int) -> Optional[Text]:
-        if index in self.__index_dict:
-            return self.__index_dict[index]
-        else:
-            return None
+        super(Line, self).__init__(
+            {text.index: text for text in texts if text.index is not None}
+        )

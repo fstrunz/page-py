@@ -84,7 +84,7 @@ class TestParseRegion(unittest.TestCase):
             SIMPLE_TEXT_REGION, {}
         )
 
-        self.assertEqual(text_region.id, "r0")
+        self.assertEqual(text_region.region_id, "r0")
         self.assertEqual(text_region.children, [])
         self.assertEqual(text_region.region_type, TextRegionType.PARAGRAPH)
         self.assertEqual(
@@ -98,7 +98,7 @@ class TestParseRegion(unittest.TestCase):
         # check that from_element recognised this as a text region
         self.assertNotEqual(region, None)
         self.assertIsInstance(region, TextRegion)
-        self.assertEqual(region.id, "r0")
+        self.assertEqual(region.region_id, "r0")
 
     def test_nested_text_regions(self):
         region: Optional[TextRegion] = Region.from_element(
@@ -106,7 +106,7 @@ class TestParseRegion(unittest.TestCase):
         )
         self.assertNotEqual(region, None)
         self.assertIsInstance(region, TextRegion)
-        self.assertEqual(region.id, "r0")
+        self.assertEqual(region.region_id, "r0")
         self.assertEqual(region.region_type, TextRegionType.CAPTION)
         self.assertEqual(len(region.children), 2)
         self.assertEqual(
@@ -123,7 +123,7 @@ class TestParseRegion(unittest.TestCase):
         self.assertIsInstance(child1, TextRegion)
         self.assertIsInstance(child2, TextRegion)
 
-        self.assertEqual(child1.id, "r01")
+        self.assertEqual(child1.region_id, "r01")
         self.assertEqual(child1.region_type, TextRegionType.HEADING)
         self.assertEqual(
             child1.coords.points,
@@ -155,7 +155,7 @@ class TestParseRegion(unittest.TestCase):
 
     def test_region_traverse_children(self):
         region: TextRegion = TextRegion.from_element(TRAVERSE_CHILDREN, {})
-        region_ids = [child.id for child in region.children]
+        region_ids = [child.region_id for child in region.children]
         self.assertIn("r3", region_ids)
         self.assertIn("r4", region_ids)
         self.assertNotIn("r8", region_ids)  # invalid region

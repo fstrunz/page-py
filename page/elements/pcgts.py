@@ -5,15 +5,14 @@ from page.elements.element import Element
 from page.exceptions import PageXMLError
 from page.constants import NsMap
 from lxml import etree
+from dataclasses import dataclass
 
 
+@dataclass
 class PcGts(Element):
-    def __init__(
-        self, pc_gts_id: Optional[str], metadata: Metadata, page: Page
-    ):
-        self.pc_gts_id = pc_gts_id
-        self.metadata = metadata
-        self.page = page
+    pc_gts_id: Optional[str]
+    metadata: Metadata
+    page: Page
 
     @staticmethod
     def from_element(pcgts_xml: etree.ElementBase, nsmap: NsMap) -> "PcGts":

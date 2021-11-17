@@ -4,11 +4,12 @@ from page.constants import NsMap
 from page.exceptions import PageXMLError
 from typing import List
 from lxml import etree
+from dataclasses import dataclass
 
 
+@dataclass
 class Coordinates(Element):
-    def __init__(self, points: List[Point]):
-        self.points = points
+    points: List[Point]
 
     @staticmethod
     def from_element(

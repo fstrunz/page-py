@@ -7,15 +7,14 @@ from page.elements.line import Line
 from page.constants import NsMap
 from page.exceptions import PageXMLError
 from lxml import etree
+from dataclasses import dataclass
 
 
+@dataclass
 class Region(Element, ABC):
-    def __init__(
-        self, region_id: str, coords: Coordinates, children: List["Region"]
-    ):
-        self.id = region_id
-        self.coords = coords
-        self.children = children
+    region_id: str
+    coords: Coordinates
+    children: List["Region"]
 
     @staticmethod
     def _parse_region(
@@ -45,7 +44,9 @@ class Region(Element, ABC):
     def _create_region_base_element(
         self, tag: str, nsmap: NsMap
     ) -> etree.ElementBase:
-        region_xml = etree.Element(tag, attrib={"id": self.id}, nsmap=nsmap)
+        region_xml = etree.Element(
+            tag, attrib={"id": self.region_id}, nsmap=nsmap
+        )
         region_xml.append(self.coords.to_element(nsmap))
 
         for child in self.children:

@@ -30,7 +30,7 @@ class TestParseLine(unittest.TestCase):
         line: Line = Line.from_element(SIMPLE_TEXT_LINE, {})
 
         self.assertNotIsInstance(line, IndexedLine)
-        self.assertEqual(line.id, "l0")
+        self.assertEqual(line.line_id, "l0")
         self.assertEqual(line.texts, [Text(None, "test", None)])
         self.assertEqual(
             line.coords.points,
@@ -40,7 +40,7 @@ class TestParseLine(unittest.TestCase):
     def test_indexed_line(self):
         line: Line = Line.from_element(INDEXED_TEXT_LINE, {})
 
-        self.assertEqual(line.id, "l0")
+        self.assertEqual(line.line_id, "l0")
         self.assertEqual(len(line.texts), 2)
 
         text0 = Text(0, "text alternative 1", None)
@@ -52,8 +52,8 @@ class TestParseLine(unittest.TestCase):
         self.assertIsInstance(line, IndexedLine)
 
         indexed_line: IndexedLine = line
-        self.assertEqual(indexed_line.get_text_from_index(0), text0)
-        self.assertEqual(indexed_line.get_text_from_index(1), text1)
+        self.assertEqual(indexed_line.get_from_index(0), text0)
+        self.assertEqual(indexed_line.get_from_index(1), text1)
 
     def test_parse_line_invert(self):
         for xml in [
