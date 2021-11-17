@@ -5,6 +5,8 @@ from page.elements.coords import Coordinates
 from page.elements.metadata import Metadata
 from page.elements.region import Region, TextRegion, TextRegionType
 from page.elements.text import Text
+from page.elements.word import Word
+from page.elements.glyph import Glyph
 from page.elements.page import Page
 from page.elements.pcgts import PcGts
 
@@ -17,7 +19,7 @@ __all__ = [
     "Point", "parse_points", "points_to_string",
     "Metadata",
     "Region", "TextRegion", "TextRegionType",
-    "Text",
+    "Text", "Word", "Glyph",
     "Page",
     "PcGts"
 ]
