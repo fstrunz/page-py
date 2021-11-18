@@ -4,6 +4,7 @@ from page.elements.glyph import Glyph, IndexedGlyph
 from page.elements.point import Point
 from page.elements.text import Text
 from page.exceptions import PageXMLError
+import page.test.assert_utils as utils
 
 SIMPLE_GLYPH = etree.XML(
     """<Glyph id="w0g0">
@@ -99,6 +100,7 @@ class TestParseGlyph(unittest.TestCase):
         self.assertIsInstance(glyph, IndexedGlyph)
 
         glyph: IndexedGlyph = glyph
+        self.assertEqual(len(glyph.texts()), 2)
         self.assertEqual(glyph.get_from_index(0), Text(0, "ü", None))
         self.assertEqual(glyph.get_from_index(45), Text(45, "ä", None))
 
@@ -109,3 +111,15 @@ class TestParseGlyph(unittest.TestCase):
                 GLYPH_WITH_INDEXED_AND_UNINDEXED_TEXT, {}
             )
         )
+
+    def test_parse_glyph_invert(self):
+        for xml in [
+            SIMPLE_GLYPH,
+            GLYPH_WITH_TEXT,
+            GLYPH_WITH_INDEXED_TEXT
+        ]:
+            utils.assert_same_descendant_tags(
+                self,
+                Glyph.from_element(xml, {}).to_element({}),
+                xml
+            )

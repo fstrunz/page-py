@@ -64,3 +64,5 @@ class IndexedGlyph(Glyph, IndexedElement[int, Text]):
 
         for text in self.texts():
             glyph_xml.append(text.to_element(nsmap))
+
+        return glyph_xml
