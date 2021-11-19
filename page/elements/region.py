@@ -7,14 +7,14 @@ from page.elements.line import Line
 from page.constants import NsMap
 from page.exceptions import PageXMLError
 from lxml import etree
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 
 @dataclass
 class Region(Element, ABC):
     region_id: str
-    coords: Coordinates
-    children: List["Region"]
+    coords: Coordinates = field(repr=False)
+    children: List["Region"] = field(repr=False)
 
     @staticmethod
     def _parse_region(
@@ -98,16 +98,11 @@ class TextRegionType(Enum):
     OTHER = "other"
 
 
+@dataclass
 class TextRegion(Region):
-    def __init__(
-        self, region_id: str,
-        coords: Coordinates, children: List[Region],
-        region_type: TextRegionType, lines: List[Line]
-    ):
-        super().__init__(region_id, coords, children)
-        self.region_type = region_type
-        self.lines = lines
-        # TODO: TextRegion can contain its own TextEquiv (and TextStyle)
+    region_type: TextRegionType
+    lines: List[Line] = field(repr=False)
+    # TODO: TextRegion can contain its own TextEquiv (and TextStyle)
 
     @staticmethod
     def from_element(

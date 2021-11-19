@@ -6,13 +6,13 @@ from page.constants import NsMap
 from page.exceptions import PageXMLError
 from typing import Iterable, List, Optional
 from lxml import etree
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 
 @dataclass
 class Glyph(Element):
     glyph_id: str
-    coords: Coordinates
+    coords: Coordinates = field(repr=False)
     text: Optional[Text]
     # TODO: Glyph attributes (e.g. ligature, symbol, ...)
 

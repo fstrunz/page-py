@@ -6,13 +6,13 @@ from page.exceptions import PageXMLError
 from page.constants import NsMap
 from lxml import etree
 from typing import Iterable, List, Optional
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 
 @dataclass
 class Line(Element):
     line_id: str
-    coords: Coordinates
+    coords: Coordinates = field(repr=False)
     text: Optional[Text]
 
     @staticmethod
