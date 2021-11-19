@@ -5,21 +5,15 @@ from lxml import etree
 from page.exceptions import PageXMLError
 from page.elements.element import Element
 from page.constants import NsMap
+from dataclasses import dataclass
 
 
+@dataclass
 class Metadata(Element):
-    def __init__(
-        self,
-        creator: str,
-        created: datetime,
-        last_change: datetime,
-        comments: Optional[str],
-    ):
-        super().__init__()
-        self.creator = creator
-        self.comments = comments
-        self.created = created
-        self.last_change = last_change
+    creator: str
+    created: datetime
+    last_change: datetime
+    comments: Optional[str]
 
     @staticmethod
     def from_element(metadata: etree.ElementBase, nsmap: NsMap) -> "Metadata":
