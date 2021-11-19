@@ -97,6 +97,7 @@ class TestParseGlyph(unittest.TestCase):
     def test_parse_glyph_indexed_text(self):
         glyph: Glyph = Glyph.from_element(GLYPH_WITH_INDEXED_TEXT, {})
         self.assertEqual(glyph.glyph_id, "w0g3")
+        self.assertEqual(glyph.text, Text(0, "ü", None))
         self.assertIsInstance(glyph, IndexedGlyph)
 
         glyph: IndexedGlyph = glyph

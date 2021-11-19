@@ -71,6 +71,7 @@ class TestParseLine(unittest.TestCase):
 
     def test_indexed_line(self):
         line: Line = Line.from_element(INDEXED_TEXT_LINE, {})
+        self.assertEqual(line.text, Text(0, "text alternative 1", None))
         self.assertIsInstance(line, IndexedLine)
         line: IndexedLine = line
 

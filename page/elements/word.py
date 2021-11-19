@@ -63,8 +63,8 @@ class IndexedWord(Word, IndexedElement[int, Text]):
         self, word_id: str, coords: Coordinates,
         glyphs: List[Glyph], texts: List[Text]
     ):
-        super().__init__(word_id, coords, glyphs, None)
         super(Word, self).__init__(texts, lambda text: text.index)
+        super().__init__(word_id, coords, glyphs, self.get_from_index(0))
 
     def texts(self) -> Iterable[Text]:
         return self.objects()

@@ -4,6 +4,7 @@ from lxml import etree
 from page.elements.point import Point
 from page.elements.word import IndexedWord, Word
 from page.elements.text import Text
+from page.exceptions import PageXMLError
 import page.test.assert_utils as utils
 
 SIMPLE_WORD = etree.XML(
@@ -74,6 +75,16 @@ INDEXED_WORD_WITH_GLYPHS = etree.XML(
     </Word>"""
 )
 
+WORD_WITHOUT_ID = etree.XML(
+    """<Word>
+        <Coords points="0,0 0,0" />
+    </Word>"""
+)
+
+WORD_WITHOUT_COORDS = etree.XML(
+    """<Word id="w4"></Word>"""
+)
+
 
 class TestParseWord(unittest.TestCase):
     def test_parse_simple_word(self):
@@ -113,10 +124,23 @@ class TestParseWord(unittest.TestCase):
         word: Word = Word.from_element(INDEXED_WORD_WITH_GLYPHS, {})
         self.assertEqual(word.word_id, "w3")
         self.assertEqual(len(word.glyphs), 3)
+        self.assertEqual(word.text, Text(0, "abc", None))
         self.assertIsInstance(word, IndexedWord)
         word: IndexedWord = word
         self.assertEqual(word.get_from_index(0), Text(0, "abc", None))
         self.assertEqual(word.get_from_index(1), Text(1, "cba", None))
+
+    def test_parse_word_without_id(self):
+        self.assertRaises(
+            PageXMLError,
+            lambda: Word.from_element(WORD_WITHOUT_ID, {})
+        )
+
+    def test_parse_word_without_coords(self):
+        self.assertRaises(
+            PageXMLError,
+            lambda: Word.from_element(WORD_WITHOUT_COORDS, {})
+        )
 
     def test_parse_word_invert(self):
         for xml in [
