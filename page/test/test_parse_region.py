@@ -50,13 +50,13 @@ NO_COORDS_TEXT_REGION_3 = etree.XML(
     </TextRegion>"""
 )
 
-REGION_INVALID_TYPE_1 = etree.XML(
+REGION_NO_TYPE = etree.XML(
     """<TextRegion id="r0">
         <Coords points="0,0 300,400 800,600 100,200" />
     </TextRegion>"""
 )
 
-REGION_INVALID_TYPE_2 = etree.XML(
+REGION_INVALID_TYPE = etree.XML(
     """<TextRegion id="r0" type="𝐧𝐨𝐭 𝐚 𝐭𝐲𝐩𝐞">
         <Coords points="0,0 300,400 800,600 100,200" />
     </TextRegion>"""
@@ -143,15 +143,15 @@ class TestParseRegion(unittest.TestCase):
                 PageXMLError, lambda: TextRegion.from_element(test_xml, {})
             )
 
+    def test_region_no_type(self):
+        region_xml = TextRegion.from_element(REGION_NO_TYPE, {})
+        self.assertIsNone(region_xml.region_type)
+
     def test_region_invalid_type(self):
-        for test_xml in [
-            REGION_INVALID_TYPE_1,
-            REGION_INVALID_TYPE_2
-        ]:
-            self.assertRaises(
-                PageXMLError,
-                lambda: TextRegion.from_element(test_xml, {})
-            )
+        self.assertRaises(
+            PageXMLError,
+            lambda: TextRegion.from_element(REGION_INVALID_TYPE, {})
+        )
 
     def test_region_traverse_children(self):
         region: TextRegion = TextRegion.from_element(TRAVERSE_CHILDREN, {})

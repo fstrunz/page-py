@@ -100,7 +100,7 @@ class TextRegionType(Enum):
 
 @dataclass
 class TextRegion(Region):
-    region_type: TextRegionType
+    region_type: Optional[TextRegionType]
     lines: List[Line] = field(repr=False)
     # TODO: TextRegion can contain its own TextEquiv (and TextStyle)
 
@@ -111,12 +111,14 @@ class TextRegion(Region):
         region_type_name = region_xml.get("type")
 
         if region_type_name is None:
-            raise PageXMLError("region is missing a type attribute")
-
-        try:
-            region_type = TextRegionType(region_type_name)
-        except ValueError:
-            raise PageXMLError(f"region has invalid type '{region_type_name}'")
+            region_type = None
+        else:
+            try:
+                region_type = TextRegionType(region_type_name)
+            except ValueError:
+                raise PageXMLError(
+                    f"region has invalid type '{region_type_name}'"
+                )
 
         region_id, coords, children = Region._parse_region(region_xml, nsmap)
 
