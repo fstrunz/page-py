@@ -19,6 +19,13 @@ EMPTY_TEXT_LINE = etree.XML(
     </TextLine>"""
 )
 
+EMPTY_TEXT_LINE_BASELINE = etree.XML(
+    """<TextLine id="l3">
+        <Coords points="0,0 1,1 2,2" />
+        <Baseline points="2,2 1,1 0,0" />
+    </TextLine>"""
+)
+
 INDEXED_TEXT_LINE = etree.XML(
     """<TextLine id="l0">
         <Coords points="0,0 1,1 2,2" />
@@ -64,6 +71,22 @@ class TestParseLine(unittest.TestCase):
         self.assertNotIsInstance(line, IndexedLine)
         self.assertEqual(line.line_id, "l3")
         self.assertIsNone(line.text)
+        self.assertIsNone(line.baseline)
+        self.assertEqual(
+            line.coords.points,
+            [Point(0, 0), Point(1, 1), Point(2, 2)]
+        )
+
+    def test_empty_line_with_baseline(self):
+        line: Line = Line.from_element(EMPTY_TEXT_LINE_BASELINE, {})
+
+        self.assertNotIsInstance(line, IndexedLine)
+        self.assertEqual(line.line_id, "l3")
+        self.assertIsNone(line.text)
+        self.assertEqual(
+            line.baseline.points,
+            [Point(2, 2), Point(1, 1), Point(0, 0)]
+        )
         self.assertEqual(
             line.coords.points,
             [Point(0, 0), Point(1, 1), Point(2, 2)]
@@ -96,7 +119,9 @@ class TestParseLine(unittest.TestCase):
     def test_parse_line_invert(self):
         for xml in [
             SIMPLE_TEXT_LINE,
-            INDEXED_TEXT_LINE
+            INDEXED_TEXT_LINE,
+            EMPTY_TEXT_LINE,
+            EMPTY_TEXT_LINE_BASELINE
         ]:
             utils.assert_same_descendant_tags(
                 self,

@@ -1,5 +1,5 @@
 import unittest
-from page.elements.coords import Coordinates
+from page.elements.coords import Baseline, Coordinates
 from page.elements.point import Point
 from page.exceptions import PageXMLError
 import page.test.assert_utils as utils
@@ -11,6 +11,10 @@ SIMPLE_COORDS = etree.XML(
 
 NO_POINTS_ATTRIB = etree.XML(
     """<Coords />"""
+)
+
+SIMPLE_BASELINE = etree.XML(
+    """<Baseline points="2,2 1,1 0,0" />"""
 )
 
 
@@ -33,3 +37,9 @@ class TestParseCoords(unittest.TestCase):
             Coordinates.from_element(SIMPLE_COORDS, {}).to_element({}),
             SIMPLE_COORDS
         )
+
+    def test_parse_baseline(self):
+        baseline = Baseline.from_element(SIMPLE_BASELINE, {})
+        self.assertEqual(baseline.points, [
+            Point(2, 2), Point(1, 1), Point(0, 0)
+        ])
