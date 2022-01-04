@@ -3,9 +3,10 @@ from page.elements.metadata import Metadata
 from page.elements.page import Page
 from page.elements.element import Element
 from page.exceptions import PageXMLError
-from page.constants import NsMap
+from page.constants import NsMap, DEFAULT_NAMESPACE_MAP
 from lxml import etree
 from dataclasses import dataclass
+from pathlib import Path
 
 
 @dataclass
@@ -41,6 +42,7 @@ class PcGts(Element):
         pcgts_xml.append(self.page.to_element(nsmap))
         return pcgts_xml
 
+    @staticmethod
     def from_file(file: TextIO) -> Optional["PcGts"]:
         tree = etree.parse(file)
         root_xml = tree.getroot()
@@ -51,3 +53,10 @@ class PcGts(Element):
             return None
 
         return PcGts.from_element(root_xml, root_xml.nsmap)
+
+    def save_to_file(self, path: Path, nsmap: NsMap = DEFAULT_NAMESPACE_MAP):
+        root_xml = self.to_element(nsmap)
+        encoded_xml = etree.tostring(root_xml, pretty_print=True)
+
+        with path.open("wb") as file:
+            file.write(encoded_xml)
