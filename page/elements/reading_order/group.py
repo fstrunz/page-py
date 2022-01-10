@@ -52,3 +52,22 @@ class UnorderedGroupIndexed(UnorderedGroup, GroupIndexed):
     ):
         super(UnorderedGroup, self).__init__(index)
         super().__init__(group_id, children, caption)
+
+
+@dataclass
+class RegionRef(Group):
+    region_ref: str
+
+    def __init__(
+        self, group_id: str, region_ref: str
+    ):
+        super().__init__(group_id, [], None)
+        self.region_ref = region_ref
+
+
+class RegionRefIndexed(RegionRef, GroupIndexed):
+    def __init__(
+        self, group_id: str, index: int, region_ref: str
+    ):
+        super(RegionRef, self).__init__(index)
+        super().__init__(group_id, region_ref)
