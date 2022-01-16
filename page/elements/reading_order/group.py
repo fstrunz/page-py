@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import List, Optional, Tuple, Union
+from typing import Iterable, List, Optional, Tuple, Union
 from lxml import etree
 
 from page.elements import Element
@@ -34,6 +34,18 @@ class Group(Element, ABC):
     @abstractmethod
     def to_element(self, nsmap: NsMap) -> etree.ElementBase:
         pass
+
+    def region_refs(self) -> Iterable[RegionRef]:
+        return filter(
+            lambda child: isinstance(child, RegionRef),
+            self.children
+        )
+
+    def subgroups(self) -> Iterable["Group"]:
+        return filter(
+            lambda child: isinstance(child, Group),
+            self.children
+        )
 
 
 @dataclass

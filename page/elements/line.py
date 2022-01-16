@@ -66,8 +66,8 @@ class IndexedLine(Line, IndexedElement[int, Text]):
         self, line_id: str, coords: Coordinates,
         baseline: Optional[Baseline], texts: List[Text]
     ):
-        super(Line, self).__init__(texts, lambda text: text.index)
-        super().__init__(line_id, coords, baseline, self.get_from_index(0))
+        IndexedElement.__init__(self, texts, lambda text: text.index)
+        Line.__init__(self, line_id, coords, baseline, self.get_from_index(0))
 
     def texts(self) -> Iterable[Text]:
         return self.objects()

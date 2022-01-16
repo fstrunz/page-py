@@ -53,8 +53,8 @@ class Glyph(Element):
 
 class IndexedGlyph(Glyph, IndexedElement[int, Text]):
     def __init__(self, glyph_id: str, coords: Coordinates, texts: List[Text]):
-        super(Glyph, self).__init__(texts, lambda text: text.index)
-        super().__init__(glyph_id, coords, self.get_from_index(0))
+        IndexedElement.__init__(self, texts, lambda text: text.index)
+        Glyph.__init__(self, glyph_id, coords, self.get_from_index(0))
 
     def texts(self) -> Iterable[Text]:
         return self.objects()

@@ -1,4 +1,4 @@
-from typing import List, Union, Optional
+from typing import List, Union, Optional, Iterable
 from lxml import etree
 
 from page.elements.indexed import IndexedElement
@@ -17,16 +17,16 @@ class OrderedGroup(
         children: List[Union[GroupIndexed, RegionRefIndexed]],
         caption: Optional[str] = None
     ):
-        super(Group, self).__init__(
-            children, lambda group_or_ref: group_or_ref.index
+        IndexedElement.__init__(
+            self, children, lambda group_or_ref: group_or_ref.index
         )
-        super().__init__(group_id, children, caption)
+        Group.__init__(self, group_id, children, caption)
 
     @staticmethod
     def from_element(
         group_xml: etree.ElementBase, nsmap: NsMap
     ) -> "OrderedGroup":
-        group_id, caption = super()._from_element(group_xml, "OrderedGroup")
+        group_id, caption = Group._from_element(group_xml, "OrderedGroup")
         children: List[Union[GroupIndexed, RegionRefIndexed]] = []
 
         for ogi_xml in group_xml.findall(
@@ -61,6 +61,9 @@ class OrderedGroup(
 
         return og_xml
 
+    def subgroups(self) -> Iterable[GroupIndexed]:
+        return super().subgroups()
+
 
 class OrderedGroupIndexed(OrderedGroup, GroupIndexed):
     def __init__(
@@ -68,7 +71,7 @@ class OrderedGroupIndexed(OrderedGroup, GroupIndexed):
         children: List[Union[GroupIndexed, RegionRefIndexed]],
         index: int, caption: Optional[str] = None
     ):
-        super(OrderedGroup, self).__init__(index)
+        super(OrderedGroup, self).__init__(index, children, caption, index)
         super().__init__(group_id, children, caption)
 
     @staticmethod
@@ -88,8 +91,7 @@ class OrderedGroupIndexed(OrderedGroup, GroupIndexed):
                 "OrderedGroupIndexed has invalid index attribute"
             )
 
-        og = super().from_element(group_xml, nsmap)
-
+        og = OrderedGroup.from_element(group_xml, nsmap)
         return OrderedGroupIndexed(
             og.group_id, og.children, index, og.caption
         )
