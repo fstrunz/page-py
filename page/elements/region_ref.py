@@ -34,7 +34,7 @@ class RegionRefIndexed(RegionRef):
     def from_element(
         ref_xml: etree.ElementBase, nsmap: NsMap
     ) -> "RegionRefIndexed":
-        region_ref = super().from_element(ref_xml, nsmap)
+        region_ref = RegionRef.from_element(ref_xml, nsmap)
         index = ref_xml.get("index")
         if index is None:
             raise PageXMLError(
@@ -48,7 +48,7 @@ class RegionRefIndexed(RegionRef):
                 "RegionRefIndexed has invalid index attribute"
             )
 
-        return RegionRefIndexed(region_ref, index)
+        return RegionRefIndexed(region_ref.ref, index)
 
     def to_element(self, nsmap: NsMap) -> etree.ElementBase:
         ref_xml = etree.Element("RegionRefIndexed", nsmap=nsmap)

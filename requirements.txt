@@ -1,8 +1,11 @@
 flake8==4.0.1
-lxml==4.6.5
+importlib-metadata==4.2.0
+lxml==4.7.1
 mccabe==0.6.1
 pycodestyle==2.8.0
 pyflakes==2.4.0
 python-dateutil==2.8.2
 rstr==3.0.0
 six==1.16.0
+typing_extensions==4.0.1
+zipp==3.7.0
