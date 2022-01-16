@@ -19,7 +19,7 @@ class UnorderedGroup(Group):
     def from_element(
         group_xml: etree.ElementBase, nsmap: NsMap
     ) -> "UnorderedGroup":
-        group_id, caption = super()._from_element(group_xml, "UnorderedGroup")
+        group_id, caption = Group._from_element(group_xml, "UnorderedGroup")
         children: List[Union[Group, RegionRef]] = []
 
         for og_xml in group_xml.findall("./OrderedGroup", namespaces=nsmap):
@@ -52,8 +52,8 @@ class UnorderedGroupIndexed(UnorderedGroup, GroupIndexed):
         self, group_id: str, children: List[Group],
         refs: List[RegionRef], index: int, caption: Optional[str] = None
     ):
-        super(UnorderedGroup, self).__init__(index)
-        super().__init__(group_id, children, refs, caption)
+        GroupIndexed.__init__(self, index)
+        UnorderedGroup.__init__(self, group_id, children, refs, caption)
 
     @staticmethod
     def from_element(
