@@ -71,8 +71,8 @@ class OrderedGroupIndexed(OrderedGroup, GroupIndexed):
         children: List[Union[GroupIndexed, RegionRefIndexed]],
         index: int, caption: Optional[str] = None
     ):
-        super(OrderedGroup, self).__init__(index, children, caption, index)
-        super().__init__(group_id, children, caption)
+        GroupIndexed.__init__(self, group_id, children, caption, index)
+        OrderedGroup.__init__(self, group_id, children, caption)
 
     @staticmethod
     def from_element(

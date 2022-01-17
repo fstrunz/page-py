@@ -13,7 +13,7 @@ class UnorderedGroup(Group):
         self, group_id: str, children: List[Union[Group, RegionRef]],
         caption: Optional[str] = None
     ):
-        super().__init__(group_id, children, caption)
+        Group.__init__(self, group_id, children, caption)
 
     @staticmethod
     def from_element(
@@ -49,11 +49,11 @@ class UnorderedGroup(Group):
 
 class UnorderedGroupIndexed(UnorderedGroup, GroupIndexed):
     def __init__(
-        self, group_id: str, children: List[Group],
-        refs: List[RegionRef], index: int, caption: Optional[str] = None
+        self, group_id: str, children: List[Union[Group, RegionRef]],
+        index: int, caption: Optional[str] = None
     ):
-        GroupIndexed.__init__(self, index)
-        UnorderedGroup.__init__(self, group_id, children, refs, caption)
+        GroupIndexed.__init__(self, group_id, children, caption, index)
+        UnorderedGroup.__init__(self, group_id, children, caption)
 
     @staticmethod
     def from_element(
@@ -72,7 +72,7 @@ class UnorderedGroupIndexed(UnorderedGroup, GroupIndexed):
                 "UnorderedGroupIndexed has invalid index attribute"
             )
 
-        ug = super().from_element(group_xml, nsmap)
+        ug = UnorderedGroup.from_element(group_xml, nsmap)
 
         return UnorderedGroupIndexed(
             ug.group_id, ug.children, index, ug.caption
