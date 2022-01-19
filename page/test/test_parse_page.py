@@ -1,7 +1,8 @@
 import unittest
 from lxml import etree
-from page.elements import Page, TextRegion
+from page.elements import Page, TextRegion, RegionRefIndexed
 from page.exceptions import PageXMLError
+from page.elements.reading_order import OrderedGroup
 import page.test.assert_utils as utils
 
 EMPTY_PAGE = etree.XML(
@@ -52,6 +53,7 @@ class TestParsePage(unittest.TestCase):
         page = Page.from_element(EMPTY_PAGE, {})
         self.assertEqual(page.image_filename, "test.png")
         self.assertEqual(page.image_size, (1024, 768))
+        self.assertIsNone(page.reading_order)
 
     def test_parse_page_invalid_attribs(self):
         self.assertRaises(
@@ -66,6 +68,7 @@ class TestParsePage(unittest.TestCase):
         self.assertEqual(len(page.regions), 1)
         self.assertEqual(page.regions[0].region_id, "r0")
         self.assertIsInstance(page.regions[0], TextRegion)
+        self.assertIsNone(page.reading_order)
 
     def test_parse_complex_page(self):
         page = Page.from_element(COMPLEX_PAGE, {})
@@ -81,6 +84,11 @@ class TestParsePage(unittest.TestCase):
 
         for region in page.regions:
             self.assertIsInstance(region, TextRegion)
+
+        self.assertIsNotNone(page.reading_order)
+        ro = page.reading_order
+        self.assertIsInstance(ro.root, OrderedGroup)
+        self.assertEqual(ro.root.get_from_index(2), RegionRefIndexed("r2", 2))
 
     def test_parse_page_invert(self):
         for xml in [EMPTY_PAGE, SIMPLE_PAGE]:
