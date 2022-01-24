@@ -14,8 +14,8 @@ class Text(Element):
     conf: Optional[float] = field(default=None)
 
     def __post_init__(self):
-        if self.conf is not None and not (0 < self.conf < 1):
-            raise ValueError("conf must be strictly between 0 and 1")
+        if self.conf is not None and not (0 <= self.conf <= 1):
+            raise ValueError("conf must be between 0 and 1")
 
     @staticmethod
     def from_element(textequiv_xml: etree.ElementBase, nsmap: NsMap) -> "Text":
@@ -29,9 +29,12 @@ class Text(Element):
                     f"confidence {conf} is not a valid float"
                 )
 
-            if not (0 < conf < 1):
+            # TODO: Technically, PAGE-XML spec requires that conf ∈ ]0, 1[,
+            # however conf=1 and conf=0 are used anyway in some places.
+            # Handle this with some sort of strict mode?
+            if not (0 <= conf <= 1):
                 raise PageXMLError(
-                    f"confidence {conf} is not strictly between 0 and 1"
+                    f"confidence {conf} is not between 0 and 1"
                 )
 
         plaintext_xml = textequiv_xml.find("./PlainText", nsmap)
