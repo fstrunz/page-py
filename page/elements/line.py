@@ -2,6 +2,7 @@ from page.elements.element import Element
 from page.elements.coords import Baseline, Coordinates
 from page.elements.text import Text
 from page.elements.indexed import IndexedElement
+from page.elements.word import Word
 from page.exceptions import PageXMLError
 from page.constants import NsMap
 from lxml import etree
@@ -13,8 +14,9 @@ from dataclasses import dataclass, field
 class Line(Element):
     line_id: str
     coords: Coordinates = field(repr=False)
-    baseline: Optional[Baseline] = field(repr=False)
-    text: Optional[Text]
+    text: Optional[Text] = field(default=None)
+    words: List[Word] = field(repr=False, default_factory=list)
+    baseline: Optional[Baseline] = field(repr=False, default=None)
 
     @staticmethod
     def from_element(line_xml: etree.ElementBase, nsmap: NsMap) -> "Line":
@@ -34,17 +36,26 @@ class Line(Element):
         else:
             baseline = Baseline.from_element(baseline_xml, nsmap)
 
+        word_xmls = line_xml.findall("./Word", nsmap)
+        words: List[Word] = [
+            Word.from_element(word_xml, nsmap) for word_xml in word_xmls
+        ]
+
         textequiv_xmls = line_xml.findall("./TextEquiv", nsmap)
         textequiv_count = len(textequiv_xmls)
 
         if textequiv_count == 0:
-            return Line(line_id, coords, baseline, None)
+            return Line(line_id, coords, baseline=baseline, words=words)
         elif textequiv_count == 1:
             text = Text.from_element(textequiv_xmls[0], nsmap)
-            return Line(line_id, coords, baseline, text)
+            return Line(
+                line_id, coords, baseline=baseline, text=text, words=words
+            )
         else:
             texts = [Text.from_element(xml, nsmap) for xml in textequiv_xmls]
-            return IndexedLine(line_id, coords, baseline, texts)
+            return IndexedLine(
+                line_id, coords, baseline=baseline, texts=texts, words=words
+            )
 
     def to_element(self, nsmap: NsMap) -> etree.ElementBase:
         line_xml = etree.Element(
@@ -64,10 +75,14 @@ class Line(Element):
 class IndexedLine(Line, IndexedElement[int, Text]):
     def __init__(
         self, line_id: str, coords: Coordinates,
-        baseline: Optional[Baseline], texts: List[Text]
+        texts: List[Text], words: List[Word],
+        baseline: Optional[Baseline]
     ):
         IndexedElement.__init__(self, texts, lambda text: text.index)
-        Line.__init__(self, line_id, coords, baseline, self.get_from_index(0))
+        Line.__init__(
+            self, line_id, coords, text=self.get_from_index(0),
+            baseline=baseline, words=words
+        )
 
     def texts(self) -> Iterable[Text]:
         return self.objects()

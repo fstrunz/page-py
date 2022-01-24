@@ -1,6 +1,7 @@
-from typing import Tuple, List, Optional
+from typing import Iterable, Tuple, List, Optional
 from lxml import etree
-from page.elements.region import Region
+from page.elements.line import Line
+from page.elements.region import Region, TextRegion
 from page.elements.element import Element
 from page.elements.reading_order import ReadingOrder
 from page.constants import NsMap
@@ -60,3 +61,13 @@ class Page(Element):
             root_xml.append(region.to_element(nsmap))
 
         return root_xml
+
+    def text_regions(self) -> Iterable[TextRegion]:
+        for region in self.regions:
+            if isinstance(region, TextRegion):
+                yield region
+
+    def lines(self) -> Iterable[Line]:
+        return (
+            line for region in self.text_regions() for line in region.lines
+        )

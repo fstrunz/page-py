@@ -1,6 +1,8 @@
 import unittest
 from lxml import etree
 from page.elements import Line, IndexedLine, Text, Point
+from page.elements.coords import Coordinates
+from page.elements.word import Word
 from page.exceptions import PageXMLError
 import page.test.assert_utils as utils
 
@@ -48,6 +50,27 @@ MIXED_INDEXED_NOT_INDEXED = etree.XML(
         </TextEquiv>
         <TextEquiv index="1">
             <Unicode>text alternative 2</Unicode>
+        </TextEquiv>
+    </TextLine>"""
+)
+
+TEXT_LINE_WITH_WORDS = etree.XML(
+    """<TextLine id="l2">
+        <Coords points="0,0 1,1 2,2" />
+        <Word id="l2_w0">
+            <Coords points="0,0 1,1 2,2" />
+            <TextEquiv><Unicode>test</Unicode></TextEquiv>
+        </Word>
+        <Word id="l2_w1">
+            <Coords points="0,0 1,1 2,2" />
+            <TextEquiv><Unicode>text</Unicode></TextEquiv>
+        </Word>
+        <Word id="l2_w2">
+            <Coords points="0,0 1,1 2,2" />
+            <TextEquiv><Unicode>1</Unicode></TextEquiv>
+        </Word>
+        <TextEquiv>
+            <Unicode>test text 1</Unicode>
         </TextEquiv>
     </TextLine>"""
 )
@@ -109,6 +132,19 @@ class TestParseLine(unittest.TestCase):
 
         self.assertEqual(line.get_from_index(0), text0)
         self.assertEqual(line.get_from_index(1), text1)
+
+    def test_line_with_words(self):
+        coords = Coordinates([Point(0, 0), Point(1, 1), Point(2, 2)])
+
+        line: Line = Line.from_element(TEXT_LINE_WITH_WORDS, {})
+        self.assertEqual(line.line_id, "l2")
+        self.assertNotIsInstance(line, IndexedLine)
+        self.assertEqual(len(line.words), 3)
+        self.assertEqual(line.words, [
+            Word("l2_w0", coords, [], Text(None, "test")),
+            Word("l2_w1", coords, [], Text(None, "text")),
+            Word("l2_w2", coords, [], Text(None, "1"))
+        ])
 
     def test_mixed_indexed_not_indexed_line(self):
         self.assertRaises(
