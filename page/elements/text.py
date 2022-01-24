@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Optional
 from page.exceptions import PageXMLError
 from page.elements import Element
@@ -10,10 +10,30 @@ from lxml import etree
 class Text(Element):
     index: Optional[int]
     unicode: str
-    plain_text: Optional[str]
+    plain_text: Optional[str] = field(default=None)
+    conf: Optional[float] = field(default=None)
+
+    def __post_init__(self):
+        if self.conf is not None and not (0 < self.conf < 1):
+            raise ValueError("conf must be strictly between 0 and 1")
 
     @staticmethod
     def from_element(textequiv_xml: etree.ElementBase, nsmap: NsMap) -> "Text":
+        conf = textequiv_xml.get("conf")
+
+        if conf is not None:
+            try:
+                conf = float(conf)
+            except ValueError:
+                raise PageXMLError(
+                    f"confidence {conf} is not a valid float"
+                )
+
+            if not (0 < conf < 1):
+                raise PageXMLError(
+                    f"confidence {conf} is not strictly between 0 and 1"
+                )
+
         plaintext_xml = textequiv_xml.find("./PlainText", nsmap)
         unicode_xml = textequiv_xml.find("./Unicode", nsmap)
 
@@ -29,14 +49,19 @@ class Text(Element):
             raise PageXMLError("TextEquiv is missing Unicode tag")
 
         if plaintext_xml is None:
-            text = Text(index, unicode_xml.text or "", None)
+            text = Text(index, unicode_xml.text or "", None, conf)
         else:
-            text = Text(index, unicode_xml.text or "", plaintext_xml.text)
+            text = Text(
+                index, unicode_xml.text or "", plaintext_xml.text, conf
+            )
 
         return text
 
     def to_element(self, nsmap: NsMap) -> etree.ElementBase:
         textequiv_xml = etree.Element("TextEquiv", nsmap=nsmap)
+
+        if self.conf is not None:
+            textequiv_xml.set("conf", str(self.conf))
 
         if self.index is not None:
             textequiv_xml.set("index", str(self.index))

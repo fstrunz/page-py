@@ -37,6 +37,18 @@ INVALID_INDEXED_TEXT_EQUIV = etree.XML(
     </TextEquiv>"""
 )
 
+TEXT_EQUIV_WITH_CONFIDENCE = etree.XML(
+    """<TextEquiv conf="0.5">
+        <Unicode>test</Unicode>
+    </TextEquiv>"""
+)
+
+TEST_EQUIV_WITH_INVALID_CONFIDENCE = etree.XML(
+    """<TextEquiv conf="1.0">
+        <Unicode>invalid</Unicode>
+    </TextEquiv>"""
+)
+
 
 class TestParseText(unittest.TestCase):
     def test_simple_text(self):
@@ -50,6 +62,16 @@ class TestParseText(unittest.TestCase):
     def test_empty_unicode_tag(self):
         text: Text = Text.from_element(EMPTY_UNICODE_TAG_TEXT_EQUIV, {})
         self.assertEqual(text, Text(None, "", None))
+
+    def test_text_equiv_with_confidence(self):
+        text: Text = Text.from_element(TEXT_EQUIV_WITH_CONFIDENCE, {})
+        self.assertAlmostEqual(text.conf, 0.5)
+
+    def test_text_equiv_with_invalid_confidence(self):
+        self.assertRaises(
+            PageXMLError,
+            lambda: Text.from_element(TEST_EQUIV_WITH_INVALID_CONFIDENCE, {})
+        )
 
     def test_invalid_text(self):
         self.assertRaises(
@@ -66,7 +88,8 @@ class TestParseText(unittest.TestCase):
     def test_parse_text_invert(self):
         for xml in [
             SIMPLE_TEXT_EQUIV,
-            INDEXED_TEXT_EQUIV
+            INDEXED_TEXT_EQUIV,
+            TEXT_EQUIV_WITH_CONFIDENCE
         ]:
             utils.assert_same_descendant_tags(
                 self,
